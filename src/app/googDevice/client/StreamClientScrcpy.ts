@@ -43,8 +43,7 @@ const TAG = '[StreamClientScrcpy]';
 
 export class StreamClientScrcpy
     extends BaseClient<ParamsStreamScrcpy, never>
-    implements KeyEventListener, InteractionHandlerListener
-{
+    implements KeyEventListener, InteractionHandlerListener {
     public static ACTION = 'stream';
     private static players: Map<string, PlayerClass> = new Map<string, PlayerClass>();
 
@@ -106,7 +105,7 @@ export class StreamClientScrcpy
     ): StreamClientScrcpy {
         if (query instanceof URLSearchParams) {
             const params = StreamClientScrcpy.parseParameters(query);
-            return new StreamClientScrcpy(params, streamReceiver, player, fitToScreen, videoSettings);
+            return new StreamClientScrcpy(params, streamReceiver, player, true, params.videoSettings);
         } else {
             return new StreamClientScrcpy(query, streamReceiver, player, fitToScreen, videoSettings);
         }
@@ -158,6 +157,14 @@ export class StreamClientScrcpy
             player: Util.parseString(params, 'player', true),
             udid: Util.parseString(params, 'udid', true),
             ws: Util.parseString(params, 'ws', true),
+            videoSettings: new VideoSettings({
+                bitrate: (Util.parseInt(params, 'bitrate') || 0.5) * 1024 * 1024, // default 0.5 Mbps
+                maxFps: Util.parseInt(params, 'maxFps') || 24,
+                iFrameInterval: Util.parseInt(params, 'iFrameInterval') || 5,
+                codecOptions: Util.parseString(params, 'codecOptions') || undefined,
+                encoderName: Util.parseString(params, 'encoderName') || 'c2.android.avc.encoder',
+                displayId: Util.parseInt(params, 'displayId') || 0,
+            })
         };
     }
 
